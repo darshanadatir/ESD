@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Machli Loop</title>
+</head>
+<body>
+
+<h2>Machli Loop Program 🐟</h2>
+<button onclick="runLoop()">Start</button>
+
+<div id="output"></div>
+
+<script>
+function runLoop() {
+    let text = "";
+
+    for (let i = 1; i <= 10; i++) {
+
+        // number text
+        let word = "";
+        if (i == 1) word = "Ek";
+        else if (i == 2) word = "Do";
+        else if (i == 3) word = "Teen";
+        else word = i;
+
+        // repeat machli
+        for (let j = 1; j <= i; j++) {
+            text += word + " machli ";
+        }
+
+        // repeat pani me gyi
+        for (let j = 1; j <= i; j++) {
+            text += "pani me gyi ";
+        }
+
+        // repeat chapak
+        for (let j = 1; j <= i; j++) {
+            text += "chapak ";
+        }
+
+        text += "<br><br>";
+    }
+
+    document.getElementById("output").innerHTML = text;
+}
+</script>
+
+</body>
+</html>
