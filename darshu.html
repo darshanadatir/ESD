@@ -1,0 +1,203 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>My Portfolio</title>
+
+<style>
+* {
+  margin: 0;
+  padding: 0;
+  font-family: Arial, sans-serif;
+  scroll-behavior: smooth;
+}
+
+body {
+  background: #f4f4f4;
+}
+
+/* Navbar */
+nav {
+  display: flex;
+  justify-content: space-between;
+  background: #222;
+  color: white;
+  padding: 15px 30px;
+}
+
+nav ul {
+  display: flex;
+  list-style: none;
+}
+
+nav ul li {
+  margin-left: 20px;
+}
+
+nav ul li a {
+  color: white;
+  text-decoration: none;
+}
+
+/* Hero */
+header {
+  text-align: center;
+  padding: 80px 20px;
+  background: linear-gradient(to right, #007bff, #00c6ff);
+  color: white;
+}
+
+header span {
+  color: yellow;
+}
+
+button {
+  margin-top: 20px;
+  padding: 10px 20px;
+  border: none;
+  background: black;
+  color: white;
+  cursor: pointer;
+}
+
+/* Sections */
+section {
+  padding: 50px 20px;
+  text-align: center;
+}
+
+/* Skills */
+.skill-box {
+  display: flex;
+  justify-content: center;
+  gap: 15px;
+  flex-wrap: wrap;
+  margin-top: 20px;
+}
+
+.skill-box div {
+  background: #333;
+  color: white;
+  padding: 10px 20px;
+  border-radius: 5px;
+}
+
+/* Projects */
+.project {
+  background: white;
+  margin: 15px auto;
+  padding: 20px;
+  width: 60%;
+  box-shadow: 0 0 10px gray;
+  border-radius: 10px;
+}
+
+/* Footer */
+footer {
+  background: #222;
+  color: white;
+  text-align: center;
+  padding: 10px;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .project {
+    width: 90%;
+  }
+
+  nav {
+    flex-direction: column;
+    align-items: center;
+  }
+
+  nav ul {
+    margin-top: 10px;
+  }
+}
+</style>
+
+</head>
+<body>
+
+<!-- Navbar -->
+<nav>
+  <h2>MyPortfolio</h2>
+  <ul>
+    <li><a href="#about">About</a></li>
+    <li><a href="#skills">Skills</a></li>
+    <li><a href="#projects">Projects</a></li>
+    <li><a href="#contact">Contact</a></li>
+  </ul>
+</nav>
+
+<!-- Hero -->
+<header>
+  <h1>Hello, I'm <span>Darshana Datir</span></h1>
+  <p>Frontend Developer (HTML, CSS, JavaScript)</p>
+  <button onclick="goToProjects()">View Projects</button>
+</header>
+
+<!-- About -->
+<section id="about">
+  <h2>About Me</h2>
+  <p>
+    I have some basic knowledge about some languages like C , C++ , JAVA , python, PHP , HTML 
+  </p>
+</section>
+
+<!-- Skills -->
+<section id="skills">
+  <h2>Skills</h2>
+  <div class="skill-box">
+    <div>HTML</div>
+    <div>CSS</div>
+    <div>JavaScript</div>
+    <div>Responsive Design</div>
+  </div>
+</section>
+
+<!-- Projects -->
+<section id="projects">
+  <h2>Projects</h2>
+
+  <div class="project">
+    <h3>Portfolio Website</h3>
+    <p>Created a personal portfolio using HTML, CSS, and JavaScript.</p>
+  </div>
+
+  <div class="project">
+    <h3>To-Do App</h3>
+    <p>Developed a task manager with add and delete features using JavaScript.</p>
+  </div>
+
+  <div class="project">
+    <h3>Calculator</h3>
+    <p>Built a simple calculator for basic operations using JavaScript.</p>
+  </div>
+
+</section>
+
+<!-- Contact -->
+<section id="contact">
+  <h2>Contact</h2>
+  <p>Email: darshanadatir2006@gmail.com</p>
+  <p>Phone: 1234567890</p>
+</section>
+
+<!-- Footer -->
+<footer>
+  <p>© 2026 Darshana Datir</p>
+</footer>
+
+<script>
+function goToProjects() {
+  document.getElementById("projects").scrollIntoView({
+    behavior: "smooth"
+  });
+}
+</script>
+
+</body>
+</html>
