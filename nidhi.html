@@ -1,0 +1,329 @@
+{
+  "name": "blog-management-system",
+  "version": "1.0.0",
+  "description": "Simple blog management system",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js"
+  },
+  "dependencies": {
+    "body-parser": "^1.20.0",
+    "ejs": "^3.1.9",
+    "express": "^4.18.2",
+    "multer": "^1.4.5-lts.1",
+    "sqlite3": "^5.1.6"
+  }
+}
+const mongoose = require('mongoose');
+
+mongoose.connect('mongodb://127.0.0.1:27017/blogDB', {
+    useNewUrlParser: true,
+    useUnifiedTopology: true
+})
+.then(() => console.log("Database Connected"))
+.catch(err => console.log(err));
+const path = require('path');
+const express = require('express');
+const multer = require('multer');
+const sqlite3 = require('sqlite3').verbose();
+
+const app = express();
+const upload = multer({
+  dest: path.join(__dirname, 'public', 'uploads')
+});
+
+app.set('view engine', 'ejs');
+app.set('views', path.join(__dirname, 'views'));
+
+app.use(express.urlencoded({ extended: true }));
+app.use(express.static(path.join(__dirname, 'public')));
+
+const db = new sqlite3.Database(path.join(__dirname, 'blog.db'));
+
+db.serialize(() => {
+  db.run(`
+    CREATE TABLE IF NOT EXISTS posts (
+      id INTEGER PRIMARY KEY AUTOINCREMENT,
+      title TEXT NOT NULL,
+      content TEXT NOT NULL,
+      image TEXT
+    )
+  `);
+});
+
+app.get('/', (req, res) => {
+  db.all('SELECT * FROM posts ORDER BY id DESC', (err, posts) => {
+    if (err) return res.status(500).send(err.message);
+    res.render('index', { posts });
+  });
+});
+
+app.get('/posts/create', (req, res) => {
+  res.render('create');
+});
+
+app.post('/posts/create', upload.single('image'), (req, res) => {
+  const title = req.body.title;
+  const content = req.body.content;
+  const image = req.file ? `/uploads/${req.file.filename}` : '/images/default.png';
+
+  db.run(
+    'INSERT INTO posts (title, content, image) VALUES (?, ?, ?)',
+    [title, content, image],
+    function (err) {
+      if (err) return res.status(500).send(err.message);
+      res.redirect('/');
+    }
+  );
+});
+
+app.get('/posts/:id', (req, res) => {
+  const id = req.params.id;
+  db.get('SELECT * FROM posts WHERE id = ?', [id], (err, post) => {
+    if (err) return res.status(500).send(err.message);
+    if (!post) return res.status(404).send('Post not found');
+    res.render('post', { post });
+  });
+});
+
+app.get('/posts/:id/edit', (req, res) => {
+  const id = req.params.id;
+  db.get('SELECT * FROM posts WHERE id = ?', [id], (err, post) => {
+    if (err) return res.status(500).send(err.message);
+    if (!post) return res.status(404).send('Post not found');
+    res.render('edit', { post });
+  });
+});
+
+app.post('/posts/:id/update', upload.single('image'), (req, res) => {
+  const id = req.params.id;
+  const title = req.body.title;
+  const content = req.body.content;
+
+  db.get('SELECT image FROM posts WHERE id = ?', [id], (err, row) => {
+    if (err) return res.status(500).send(err.message);
+    if (!row) return res.status(404).send('Post not found');
+
+    const image = req.file ? `/uploads/${req.file.filename}` : row.image;
+
+    db.run(
+      'UPDATE posts SET title = ?, content = ?, image = ? WHERE id = ?',
+      [title, content, image, id],
+      function (err) {
+        if (err) return res.status(500).send(err.message);
+        res.redirect(`/posts/${id}`);
+      }
+    );
+  });
+});
+app.set('view engine', 'ejs');
+app.set('views', path.join(__dirname, 'views'));
+
+app.use(express.urlencoded({ extended: true }));
+app.use(express.static(path.join(__dirname, 'public')));
+
+const db = new sqlite3.Database(path.join(__dirname, 'blog.db'));
+
+db.serialize(() => {
+  db.run(`
+    CREATE TABLE IF NOT EXISTS posts (
+      id INTEGER PRIMARY KEY AUTOINCREMENT,
+      title TEXT NOT NULL,
+      content TEXT NOT NULL,
+      image TEXT
+    )
+  `);
+});
+
+app.get('/', (req, res) => {
+  db.all('SELECT * FROM posts ORDER BY id DESC', (err, posts) => {
+    if (err) return res.status(500).send(err.message);
+    res.render('index', { posts });
+  });
+});
+
+app.get('/posts/create', (req, res) => {
+  res.render('create');
+});
+
+app.post('/posts/create', upload.single('image'), (req, res) => {
+  const title = req.body.title;
+  const content = req.body.content;
+  const image = req.file ? `/uploads/${req.file.filename}` : '/images/default.png';
+
+  db.run(
+    'INSERT INTO posts (title, content, image) VALUES (?, ?, ?)',
+    [title, content, image],
+    function (err) {
+      if (err) return res.status(500).send(err.message);
+      res.redirect('/');
+    }
+  );
+});
+
+app.get('/posts/:id', (req, res) => {
+  const id = req.params.id;
+  db.get('SELECT * FROM posts WHERE id = ?', [id], (err, post) => {
+    if (err) return res.status(500).send(err.message);
+    if (!post) return res.status(404).send('Post not found');
+    res.render('post', { post });
+  });
+});
+
+app.get('/posts/:id/edit', (req, res) => {
+  const id = req.params.id;
+  db.get('SELECT * FROM posts WHERE id = ?', [id], (err, post) => {
+    if (err) return res.status(500).send(err.message);
+    if (!post) return res.status(404).send('Post not found');
+    res.render('edit', { post });
+  });
+});
+
+app.post('/posts/:id/update', upload.single('image'), (req, res) => {
+  const id = req.params.id;
+  const title = req.body.title;
+  const content = req.body.content;
+
+  db.get('SELECT image FROM posts WHERE id = ?', [id], (err, row) => {
+    if (err) return res.status(500).send(err.message);
+    if (!row) return res.status(404).send('Post not found');
+
+    const image = req.file ? `/uploads/${req.file.filename}` : row.image;
+
+    db.run(
+      'UPDATE posts SET title = ?, content = ?, image = ? WHERE id = ?',
+      [title, content, image, id],
+      function (err) {
+        if (err) return res.status(500).send(err.message);
+        res.redirect(`/posts/${id}`);
+      }
+    );
+  });
+});
+
+app.post('/posts/:id/delete', (req, res) => {
+  const id = req.params.id;
+  db.run('DELETE FROM posts WHERE id = ?', [id], function (err) {
+    if (err) return res.status(500).send(err.message);
+    res.redirect('/');
+  });
+});
+
+app.listen(3000, () => {
+  console.log('Blog app running on http://localhost:3000');
+});
+
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>Blog Posts</title>
+  <style>
+    body { font-family: Arial, sans-serif; margin: 24px; }
+    .post { border: 1px solid #ccc; padding: 16px; margin-bottom: 16px; }
+    .post img { max-width: 250px; display: block; margin-bottom: 12px; }
+    .actions a { margin-right: 10px; }
+  </style>
+</head>
+<body>
+  <h1>Blog Posts</h1>
+  <p><a href="/posts/create">Create New Post</a></p>
+
+  <% if (posts.length === 0) { %>
+    <p>No posts yet.</p>
+  <% } else { %>
+    <% posts.forEach(function(post) { %>
+      <div class="post">
+        <h2><a href="/posts/<%= post.id %>"><%= post.title %></a></h2>
+        <% if (post.image) { %>
+          <img src="<%= c:\Users\admin\Downloads\images rcc.png %>" alt="Post Image">
+        <% } %>
+        <p><%= post.content %></p>
+        <div class="actions">
+          <a href="/posts/<%= post.id %>">View</a>
+          <a href="/posts/<%= post.id %>/edit">Edit</a>
+          <form action="/posts/<%= post.id %>/delete" method="post" style="display:inline">
+            <button type="submit">Delete</button>
+          </form>
+        </div>
+      </div>
+    <% }) %>
+  <% } %>
+</body>
+</html>
+    <!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>Create Post</title>
+</head>
+<body>
+  <h1>Create Post</h1>
+  <form action="/posts/create" method="post" enctype="multipart/form-data">
+    <div>
+      <label>Title</label><br>
+      <input type="text" name="title" required>
+    </div>
+    <div>
+      <label>Content</label><br>
+      <textarea name="content" rows="5" required></textarea>
+    </div>
+    <div>
+      <label>Image</label><br>
+      <input type="file" name="image" accept="image/*">
+    </div>
+    <button type="submit">Create</button>
+  </form>
+  <p><a href="/">Back to posts</a></p>
+</body>
+</html>
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>Edit Post</title>
+</head>
+<body>
+  <h1>Edit Post</h1>
+  <form action="/posts/<%= post.id %>/update" method="post" enctype="multipart/form-data">
+    <div>
+      <label>Title</label><br>
+      <input type="text" name="title" value="<%= post.title %>" required>
+    </div>
+    <div>
+      <label>Content</label><br>
+      <textarea name="content" rows="5" required><%= post.content %></textarea>
+    </div>
+    <div>
+      <p>Current image:</p>
+      <% if (post.image) { %>
+        <img src="<%= c:\Users\admin\Downloads\images rcc.png %>" alt="Current Image" style="max-width:200px">
+      <% } %>
+    </div>
+    <div>
+      <label>Replace image</label><br>
+      <input type="file" name="image" accept="image/*">
+    </div>
+    <button type="submit">Save</button>
+  </form>
+  <p><a href="/">Back to posts</a></p>
+</body>
+</html>
+        <!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title><%= post.title %></title>
+</head>
+<body>
+  <h1><%= post.title %></h1>
+  <% if (post.image) { %>
+    <img src="<%= c:\Users\admin\Downloads\images rcc.png %>" alt="Post Image" style="max-width:400px">
+  <% } %>
+  <p><%= post.content %></p>
+  <p>
+    <a href="/posts/<%= post.id %>/edit">Edit</a> |
+    <a href="/">Back to posts</a>
+  </p>
+</body>
+</html>
